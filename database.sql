@@ -1,0 +1,164 @@
+-- MySmartHub database.sql (starter)
+CREATE DATABASE IF NOT EXISTS mysmarthub CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+USE mysmarthub;
+
+CREATE TABLE users (
+ id INT AUTO_INCREMENT PRIMARY KEY,
+ full_name VARCHAR(100) NOT NULL,
+ username VARCHAR(50) UNIQUE NOT NULL,
+ email VARCHAR(100) UNIQUE NOT NULL,
+ password VARCHAR(255) NOT NULL,
+ photo VARCHAR(255) DEFAULT 'default.png',
+ role ENUM('admin','user') DEFAULT 'user',
+ is_verified TINYINT(1) DEFAULT 0,
+ created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+ updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB;
+
+CREATE TABLE user_settings(
+ id INT AUTO_INCREMENT PRIMARY KEY,
+ user_id INT NOT NULL,
+ theme ENUM('light','dark') DEFAULT 'light',
+ language VARCHAR(20) DEFAULT 'id',
+ timezone VARCHAR(50) DEFAULT 'Asia/Jakarta',
+ FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+CREATE TABLE password_resets(
+ id INT AUTO_INCREMENT PRIMARY KEY,
+ user_id INT,
+ token VARCHAR(255) NOT NULL,
+ expires_at DATETIME NOT NULL,
+ FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+CREATE TABLE sessions(
+ id INT AUTO_INCREMENT PRIMARY KEY,
+ user_id INT,
+ session_token VARCHAR(255) NOT NULL,
+ expires_at DATETIME,
+ FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+CREATE TABLE task_categories(
+ id INT AUTO_INCREMENT PRIMARY KEY,
+ user_id INT,
+ name VARCHAR(100),
+ color VARCHAR(20),
+ FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+CREATE TABLE tasks(
+ id INT AUTO_INCREMENT PRIMARY KEY,
+ user_id INT NOT NULL,
+ category_id INT,
+ title VARCHAR(200) NOT NULL,
+ description TEXT,
+ priority ENUM('low','medium','high') DEFAULT 'medium',
+ status ENUM('todo','doing','done') DEFAULT 'todo',
+ deadline DATETIME,
+ created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+ updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+ FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE,
+ FOREIGN KEY(category_id) REFERENCES task_categories(id) ON DELETE SET NULL
+) ENGINE=InnoDB;
+
+CREATE TABLE note_categories(
+ id INT AUTO_INCREMENT PRIMARY KEY,
+ user_id INT,
+ name VARCHAR(100),
+ color VARCHAR(20),
+ FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+CREATE TABLE notes(
+ id INT AUTO_INCREMENT PRIMARY KEY,
+ user_id INT,
+ category_id INT,
+ title VARCHAR(200),
+ content LONGTEXT,
+ is_pinned TINYINT(1) DEFAULT 0,
+ created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+ updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+ FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE,
+ FOREIGN KEY(category_id) REFERENCES note_categories(id) ON DELETE SET NULL
+) ENGINE=InnoDB;
+
+CREATE TABLE calendar_events(
+ id INT AUTO_INCREMENT PRIMARY KEY,
+ user_id INT,
+ title VARCHAR(200),
+ description TEXT,
+ start_date DATETIME,
+ end_date DATETIME,
+ location VARCHAR(255),
+ color VARCHAR(20),
+ FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+CREATE TABLE habits(
+ id INT AUTO_INCREMENT PRIMARY KEY,
+ user_id INT,
+ title VARCHAR(100),
+ target_per_day INT DEFAULT 1,
+ color VARCHAR(20),
+ created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+ FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+CREATE TABLE habit_logs(
+ id INT AUTO_INCREMENT PRIMARY KEY,
+ habit_id INT,
+ log_date DATE,
+ status TINYINT(1) DEFAULT 0,
+ FOREIGN KEY(habit_id) REFERENCES habits(id) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+CREATE TABLE finance_categories(
+ id INT AUTO_INCREMENT PRIMARY KEY,
+ user_id INT,
+ name VARCHAR(100),
+ type ENUM('income','expense'),
+ FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+CREATE TABLE finances(
+ id INT AUTO_INCREMENT PRIMARY KEY,
+ user_id INT,
+ category_id INT,
+ title VARCHAR(200),
+ amount DECIMAL(15,2),
+ type ENUM('income','expense'),
+ trans_date DATE,
+ note TEXT,
+ FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE,
+ FOREIGN KEY(category_id) REFERENCES finance_categories(id) ON DELETE SET NULL
+) ENGINE=InnoDB;
+
+CREATE TABLE notifications(
+ id INT AUTO_INCREMENT PRIMARY KEY,
+ user_id INT,
+ title VARCHAR(200),
+ message TEXT,
+ is_read TINYINT(1) DEFAULT 0,
+ created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+ FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+CREATE TABLE activity_logs(
+ id INT AUTO_INCREMENT PRIMARY KEY,
+ user_id INT,
+ activity VARCHAR(255),
+ ip_address VARCHAR(45),
+ created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+ FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+CREATE TABLE ai_history(
+ id INT AUTO_INCREMENT PRIMARY KEY,
+ user_id INT,
+ prompt LONGTEXT,
+ response LONGTEXT,
+ created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+ FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB;
