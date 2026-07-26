@@ -299,6 +299,28 @@ a:hover {
     line-height: var(--line-height-relaxed);
 }
 
+
+
+/* ============================================
+   ABOUT SECTION
+   ============================================ */
+.about {
+    padding: var(--spacing-2xl) var(--spacing-lg);
+    background-color: var(--card-color);
+}
+
+.about-container {
+    max-width: var(--max-width-container);
+    margin: 0 auto;
+}
+
+.about-description {
+    font-size: var(--font-size-lg);
+    color: var(--text-muted);
+    line-height: var(--line-height-relaxed);
+    text-align: center;
+}
+
 /* ============================================
    CTA SECTION (Call To Action)
    ============================================ */

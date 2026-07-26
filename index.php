@@ -11,6 +11,8 @@
     
     <!-- Custom CSS -->
     <link rel="stylesheet" href="assets/css/style.css">
+    
+    <link rel="icon" type="image/png" href="assets/img/myis.png">
 </head>
 <body>
     <!-- NAVBAR -->
@@ -25,7 +27,7 @@
             <div class="navbar-menu">
                 <ul class="nav-links">
                     <li><a href="#features">Fitur</a></li>
-                    <li><a href="#pricing">Harga</a></li>
+                    <li><a href="#about">Tentang</a></li>
                     <li><a href="login.php">Login</a></li>
                 </ul>
             </div>
@@ -99,6 +101,16 @@
             </div>
         </section>
 
+        <!-- ABOUT SECTION -->
+        <section id="about" class="about">
+            <div class="about-container">
+                <h2 class="section-title" >Tentang MySmartHub</h2>
+                <p class="about-description">
+                    MySmartHub adalah platform all-in-one yang dirancang untuk membantu Anda mengelola berbagai aspek kehidupan digital Anda. Dengan fitur-fitur seperti todo list, calendar, dan finance tracker, Anda dapat meningkatkan produktivitas dan efisiensi dalam satu tempat.
+                </p>
+            </div>
+        </section>
+
         <!-- CTA SECTION (Optional) -->
         <section class="cta-section">
             <div class="cta-container">
@@ -113,7 +125,7 @@
     <footer class="footer">
         <div class="footer-container">
             <p class="footer-copyright">
-                &copy; 2024 MySmartHub. Semua hak dilindungi.
+                &copy; 2026 MySmartHub. Semua hak dilindungi.
             </p>
             <div class="footer-links">
                 <a href="#privacy">Privacy</a>
