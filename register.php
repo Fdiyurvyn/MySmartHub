@@ -2,8 +2,6 @@
 require_once __DIR__ . '/config/database.php';
 
 $page_title = 'MySmartHub | Register';
-$page_css = [];
-
 $errors = [];
 $success = '';
 
@@ -14,18 +12,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $confirmPassword = $_POST['confirm_password'] ?? '';
 
     if ($name === '' || $email === '' || $password === '' || $confirmPassword === '') {
-        $errors[] = 'Please fill in all fields.';
+        $errors[] = 'Mohon isi semua field.';
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $errors[] = 'Please enter a valid email address.';
+        $errors[] = 'Email tidak valid.';
+    } elseif (strlen($password) < 6) {
+        $errors[] = 'Password minimal 6 karakter.';
     } elseif ($password !== $confirmPassword) {
-        $errors[] = 'Passwords do not match.';
+        $errors[] = 'Password tidak cocok.';
     } else {
         try {
             $pdo = getDatabaseConnection();
             $stmt = $pdo->prepare('SELECT id FROM users WHERE email = :email');
             $stmt->execute(['email' => $email]);
             if ($stmt->fetch()) {
-                $errors[] = 'An account with that email already exists.';
+                $errors[] = 'Email sudah terdaftar.';
             } else {
                 $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
                 $stmt = $pdo->prepare('INSERT INTO users (name, email, password) VALUES (:name, :email, :password)');
@@ -34,37 +34,126 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     'email' => $email,
                     'password' => $hashedPassword,
                 ]);
-                $success = 'Account created successfully. You can now log in.';
+                $success = 'Akun berhasil dibuat! Silakan <a href="login.php">login di sini</a>.';
             }
         } catch (PDOException $e) {
-            $errors[] = 'Registration failed. Please try again.';
+            $errors[] = 'Registrasi gagal. Silakan coba lagi.';
         }
     }
 }
-
-include __DIR__ . '/includes/header.php';
 ?>
-<div class="auth-box card">
-    <h2>Create account</h2>
-    <?php if ($success !== ''): ?>
-        <div class="alert alert-success"><?= htmlspecialchars($success, ENT_QUOTES, 'UTF-8') ?></div>
-    <?php endif; ?>
-    <?php if ($errors): ?>
-        <div class="alert alert-error">
-            <ul>
-                <?php foreach ($errors as $error): ?>
-                    <li><?= htmlspecialchars($error, ENT_QUOTES, 'UTF-8') ?></li>
-                <?php endforeach; ?>
-            </ul>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Daftar akun MySmartHub">
+    <title><?php echo htmlspecialchars($page_title, ENT_QUOTES, 'UTF-8'); ?></title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <div class="navbar-logo">
+                <a href="index.php">MySmartHub</a>
+            </div>
+            <div class="navbar-cta">
+                <a href="login.php" class="btn btn-secondary">Masuk</a>
+            </div>
         </div>
-    <?php endif; ?>
-    <form method="post">
-        <input type="text" name="name" placeholder="Full name" required>
-        <input type="email" name="email" placeholder="Email" required>
-        <input type="password" name="password" placeholder="Password" required>
-        <input type="password" name="confirm_password" placeholder="Confirm password" required>
-        <button type="submit">Register</button>
-    </form>
-    <p>Already have an account? <a href="login.php">Login</a></p>
-</div>
-<?php include __DIR__ . '/includes/footer.php'; ?>
+    </nav>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        <section class="auth-section">
+            <div class="auth-container">
+                <div class="auth-card">
+                    <h1 class="auth-title">Buat Akun MySmartHub</h1>
+                    <p class="auth-subtitle">Gratis, tanpa perlu kartu kredit</p>
+                    
+                    <?php if ($success !== ''): ?>
+                        <div class="alert alert-success">
+                            <?= $success ?>
+                        </div>
+                    <?php endif; ?>
+
+                    <?php if (!empty($errors)): ?>
+                        <div class="alert alert-error">
+                            <?php foreach ($errors as $error): ?>
+                                <p><?= htmlspecialchars($error, ENT_QUOTES, 'UTF-8') ?></p>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php endif; ?>
+
+                    <form method="post" class="auth-form">
+                        <div class="form-group">
+                            <label for="name">Nama Lengkap</label>
+                            <input 
+                                type="text" 
+                                id="name" 
+                                name="name" 
+                                placeholder="Masukkan nama Anda" 
+                                required
+                                autocomplete="name"
+                            >
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input 
+                                type="email" 
+                                id="email" 
+                                name="email" 
+                                placeholder="nama@email.com" 
+                                required
+                                autocomplete="email"
+                            >
+                        </div>
+
+                        <div class="form-group">
+                            <label for="password">Password</label>
+                            <input 
+                                type="password" 
+                                id="password" 
+                                name="password" 
+                                placeholder="Minimal 6 karakter" 
+                                required
+                                autocomplete="new-password"
+                            >
+                        </div>
+
+                        <div class="form-group">
+                            <label for="confirm_password">Konfirmasi Password</label>
+                            <input 
+                                type="password" 
+                                id="confirm_password" 
+                                name="confirm_password" 
+                                placeholder="Ulangi password" 
+                                required
+                                autocomplete="new-password"
+                            >
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-large auth-button">
+                            Daftar Gratis
+                        </button>
+                    </form>
+
+                    <p class="auth-footer">
+                        Sudah punya akun? <a href="login.php">Masuk di sini</a>
+                    </p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="footer-container">
+            <p class="footer-copyright">&copy; 2024 MySmartHub. Semua hak dilindungi.</p>
+        </div>
+    </footer>
+</body>
+</html>
