@@ -13,13 +13,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         try {
             $pdo = getDatabaseConnection();
-            $stmt = $pdo->prepare('SELECT id, name, email, password FROM users WHERE email = :email');
+            $stmt = $pdo->prepare('SELECT id, full_name, email, password FROM users WHERE email = :email');
             $stmt->execute(['email' => $email]);
             $user = $stmt->fetch();
 
             if ($user && password_verify($password, $user['password'])) {
                 $_SESSION['user_id'] = $user['id'];
-                $_SESSION['user_name'] = $user['name'];
+                $_SESSION['user_name'] = $user['full_name'];
                 $_SESSION['user_email'] = $user['email'];
                 redirect('dashboard.php');
             } else {
@@ -46,10 +46,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <nav class="navbar">
         <div class="navbar-container">
             <div class="navbar-logo">
-                <a href="index.php">MySmartHub</a>
+                <a href="/index.php">MySmartHub</a>
             </div>
             <div class="navbar-cta">
-                <a href="register.php" class="btn btn-secondary">Daftar</a>
+                <a href="/register.php" class="btn btn-secondary">Daftar</a>
             </div>
         </div>
     </nav>
@@ -101,7 +101,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </form>
 
                     <p class="auth-footer">
-                        Belum punya akun? <a href="register.php">Daftar sekarang</a>
+                        Belum punya akun? <a href="/register.php">Daftar sekarang</a>
                     </p>
                 </div>
             </div>

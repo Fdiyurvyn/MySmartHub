@@ -8,10 +8,10 @@ if (empty($_SESSION['user_id'])) {
 $page_title = 'MySmartHub | Dashboard';
 
 $pdo = getDatabaseConnection();
-$stmt = $pdo->prepare('SELECT name FROM users WHERE id = :id');
+$stmt = $pdo->prepare('SELECT full_name FROM users WHERE id = :id');
 $stmt->execute(['id' => $_SESSION['user_id']]);
 $user = $stmt->fetch();
-$userName = $user['name'] ?? 'Pengguna';
+$userName = $user['full_name'] ?? 'Pengguna';
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -22,6 +22,7 @@ $userName = $user['name'] ?? 'Pengguna';
     <title><?php echo htmlspecialchars($page_title, ENT_QUOTES, 'UTF-8'); ?></title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="icon" type="image/png" href="assets/img/myis.png">
 </head>
 <body>
     <!-- NAVBAR -->
@@ -34,7 +35,7 @@ $userName = $user['name'] ?? 'Pengguna';
                 <ul class="nav-links">
                     <li><a href="dashboard.php">Dashboard</a></li>
                     <li><a href="#profile">Profile</a></li>
-                    <li><a href="logout.php">Keluar</a></li>
+                    <li><a href="logout.php" >Keluar</a></li>
                 </ul>
             </div>
             <div class="navbar-cta">
@@ -54,7 +55,7 @@ $userName = $user['name'] ?? 'Pengguna';
                         <a href="dashboard.php" class="nav-item active">
                             📊 Dashboard
                         </a>
-                        <a href="#" class="nav-item">
+                        <a href="modules/tasks/index.php" class="nav-item">
                             📝 Todo List
                         </a>
                         <a href="#" class="nav-item">

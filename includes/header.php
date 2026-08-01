@@ -12,6 +12,7 @@ $page_css = $page_css ?? [];
     <?php foreach ($page_css as $css): ?>
         <link rel="stylesheet" href="<?= htmlspecialchars($css, ENT_QUOTES, 'UTF-8') ?>">
     <?php endforeach; ?>
+    
 </head>
 <body>
 <?php include __DIR__ . '/navbar.php'; ?>

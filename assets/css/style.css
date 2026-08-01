@@ -129,6 +129,17 @@ a:hover {
     border-color: var(--primary-color);
 }
 
+.btn-danger {
+    background-color: var(--danger-color);
+    color: white;
+    border-color: var(--danger-color);
+}
+
+.btn-danger:hover {
+    background-color: #DC2626;
+    border-color: #DC2626;
+}
+
 .btn-large {
     padding: var(--spacing-xs) var(--spacing-lg);
     font-size: var(--font-size-lg);

@@ -27,10 +27,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($stmt->fetch()) {
                 $errors[] = 'Email sudah terdaftar.';
             } else {
+                $usernameBase = strtolower(preg_replace('/[^a-z0-9]+/', '', $name));
+                if ($usernameBase === '') {
+                    $usernameBase = 'user';
+                }
+                $username = $usernameBase . '_' . substr(md5($email), 0, 6);
+
                 $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-                $stmt = $pdo->prepare('INSERT INTO users (name, email, password) VALUES (:name, :email, :password)');
+                $stmt = $pdo->prepare('INSERT INTO users (full_name, username, email, password) VALUES (:full_name, :username, :email, :password)');
                 $stmt->execute([
-                    'name' => $name,
+                    'full_name' => $name,
+                    'username' => $username,
                     'email' => $email,
                     'password' => $hashedPassword,
                 ]);
