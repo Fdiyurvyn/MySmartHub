@@ -74,12 +74,14 @@ $csrfToken = generateCsrfToken('tasks');
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= htmlspecialchars($page_title, ENT_QUOTES, 'UTF-8') ?></title>
+    <link rel="icon" type="image/png" href="../../assets/img/myis.png">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../../assets/css/style.css">
+    
     <style>
-        body { background: #F8FAFC; color: #1E293B; }
-        .task-shell { max-width: 1200px; margin: 2rem auto; padding: 0 1rem 3rem; }
-        .task-card { background: white; border: 1px solid #E2E8F0; border-radius: 16px; padding: 1.5rem; box-shadow: 0 10px 30px rgba(15,23,42,0.05); }
+        body { background: #1E293B; color: #1E293B; }
+        .task-shell { max-width: 1200px; color: #1E293B; margin: 2rem auto; padding: 0 1rem 3rem; }
+        .task-card { background: #4c9ef0; border: 1px solid #E2E8F0; border-radius: 16px; padding: 1.5rem; box-shadow: 0 10px 30px rgba(15,23,42,0.05); }
         .task-grid { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 1.5rem; }
         .form-group { margin-bottom: 1rem; }
         .form-group label { display: block; margin-bottom: 0.35rem; font-weight: 600; }
@@ -107,14 +109,14 @@ $csrfToken = generateCsrfToken('tasks');
     <nav class="navbar">
         <div class="navbar-container">
             <div class="navbar-logo"><a href="../../dashboard.php">MySmartHub</a></div>
-            <div class="navbar-cta"><a href="../../logout.php" class="btn btn-secondary">Keluar</a></div>
+            <div class="navbar-cta"><a href="../../dashboard.php" class="btn btn-secondary">Kembali</a></div>
         </div>
     </nav>
 
     <main class="task-shell">
         <div class="task-card">
             <h1 style="margin-bottom: 1rem;">Todo List</h1>
-            <p style="margin-bottom: 1.5rem; color: #64748B;">Kelola tugas harian Anda dengan aman dan terorganisir.</p>
+            <p style="margin-bottom: 1.5rem; color: #e2e2e2;">Kelola tugas harian Anda dengan aman dan terorganisir.</p>
 
             <?php if ($success !== ''): ?>
                 <div class="alert alert-success"><?= htmlspecialchars($success, ENT_QUOTES, 'UTF-8') ?></div>
@@ -146,6 +148,7 @@ $csrfToken = generateCsrfToken('tasks');
                                             <div class="task-meta">
                                                 <span class="badge badge-<?= htmlspecialchars($taskItem['priority'], ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars(strtoupper($taskItem['priority']), ENT_QUOTES, 'UTF-8') ?></span>
                                                 <span class="badge badge-<?= htmlspecialchars($taskItem['status'], ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars(strtoupper($taskItem['status']), ENT_QUOTES, 'UTF-8') ?></span>
+                                                
                                                 <?php if (!empty($taskItem['category_name'])): ?>
                                                     <span class="badge" style="background: #E2E8F0; color: #334155;"><?= htmlspecialchars($taskItem['category_name'], ENT_QUOTES, 'UTF-8') ?></span>
                                                 <?php endif; ?>
@@ -213,15 +216,17 @@ $csrfToken = generateCsrfToken('tasks');
                             <input type="datetime-local" id="deadline" name="deadline" value="<?= htmlspecialchars(formatDeadlineForInput($task['deadline'] ?? null), ENT_QUOTES, 'UTF-8') ?>">
                         </div>
 
-                        <div class="form-group">
+                        <!-- <div class="form-group">
                             <label for="category_id">Kategori</label>
                             <select id="category_id" name="category_id">
                                 <option value="">Tidak ada kategori</option>
+                                <option value="">Biasa</option>
+                                <option value="">Penting</option>
                                 <?php foreach ($categories as $category): ?>
                                     <option value="<?= (int) $category['id'] ?>" <?= (($task['category_id'] ?? null) == $category['id']) ? 'selected' : '' ?>><?= htmlspecialchars($category['name'], ENT_QUOTES, 'UTF-8') ?></option>
                                 <?php endforeach; ?>
                             </select>
-                        </div>
+                        </div> -->
 
                         <button type="submit" class="btn btn-primary"><?= $mode === 'edit' ? 'Simpan Perubahan' : 'Tambah Tugas' ?></button>
                         <?php if ($mode === 'edit'): ?>

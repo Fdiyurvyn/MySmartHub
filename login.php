@@ -46,10 +46,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <nav class="navbar">
         <div class="navbar-container">
             <div class="navbar-logo">
-                <a href="/index.php">MySmartHub</a>
+                <a href="index.php">MySmartHub</a>
             </div>
             <div class="navbar-cta">
-                <a href="/register.php" class="btn btn-secondary">Daftar</a>
+                <a href="register.php" class="btn btn-secondary">Daftar</a>
             </div>
         </div>
     </nav>
@@ -101,7 +101,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </form>
 
                     <p class="auth-footer">
-                        Belum punya akun? <a href="/register.php">Daftar sekarang</a>
+                        Belum punya akun? <a href="register.php">Daftar sekarang</a>
                     </p>
                 </div>
             </div>

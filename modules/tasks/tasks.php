@@ -92,11 +92,11 @@ function listTasksForUser(PDO $pdo, int $userId): array {
         'SELECT t.id, t.title, t.description, t.priority, t.status, t.deadline, t.created_at, t.updated_at,
                 c.id AS category_id, c.name AS category_name, c.color AS category_color
          FROM tasks t
-         LEFT JOIN task_categories c ON c.id = t.category_id AND c.user_id = :user_id
+         LEFT JOIN task_categories c ON c.id = t.category_id AND c.user_id = :user_id_join
          WHERE t.user_id = :user_id
          ORDER BY t.created_at DESC'
     );
-    $stmt->execute(['user_id' => $userId]);
+    $stmt->execute(['user_id' => $userId, 'user_id_join' => $userId]);
     return $stmt->fetchAll();
 }
 

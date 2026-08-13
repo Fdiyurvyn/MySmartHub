@@ -67,11 +67,33 @@ function getDatabaseConnection(): PDO {
     return $pdo;
 }
 
+function getApplicationBasePath(): string {
+    $scriptName = $_SERVER['SCRIPT_NAME'] ?? '/';
+    $trimmed = trim($scriptName, '/');
+
+    if ($trimmed === '') {
+        return '';
+    }
+
+    $parts = explode('/', $trimmed);
+
+    // If the application is served from a subfolder (e.g. /MySmartHub/...)
+    // the first path segment will be the folder name. If the first segment
+    // looks like a file (contains a dot), assume the app is at document root.
+    $first = $parts[0] ?? '';
+    if ($first === '' || strpos($first, '.') !== false) {
+        return '';
+    }
+
+    return '/' . $first;
+}
+
 function redirect(string $path): void {
     $normalizedPath = $path;
 
     if ($path !== '' && $path[0] !== '/' && strpos($path, 'http://') !== 0 && strpos($path, 'https://') !== 0) {
-        $normalizedPath = '/' . ltrim($path, '/');
+        $basePath = getApplicationBasePath();
+        $normalizedPath = ($basePath !== '' ? $basePath : '') . '/' . ltrim($path, '/');
     }
 
     header('Location: ' . $normalizedPath);
