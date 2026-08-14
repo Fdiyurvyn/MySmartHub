@@ -123,7 +123,7 @@ if (!empty($userPhoto) && $userPhoto !== 'default.png' && file_exists(__DIR__ . 
                         <a href="modules/tasks/index.php" class="nav-item">
                             📝 Todo List
                         </a>
-                        <a href="#" class="nav-item">
+                        <a href="modules/calendar/index.php" class="nav-item">
                             📅 Calendar
                         </a>
                         <a href="#" class="nav-item">
