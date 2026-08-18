@@ -27,10 +27,44 @@ $stmtEvents = $pdo->prepare('SELECT COUNT(*) FROM calendar_events WHERE user_id 
 $stmtEvents->execute(['user_id' => $_SESSION['user_id']]);
 $monthlyEventsCount = (int) $stmtEvents->fetchColumn();
 
-// 3. Hitung Total Pengeluaran
-$stmtFinance = $pdo->prepare('SELECT SUM(amount) FROM finances WHERE user_id = :user_id AND type = "expense"');
+// 3. Hitung Total Pengeluaran & Pemasukan (seluruh waktu)
+$stmtFinance = $pdo->prepare('
+    SELECT 
+        SUM(CASE WHEN type = "expense" THEN amount ELSE 0 END) as total_expense,
+        SUM(CASE WHEN type = "income" THEN amount ELSE 0 END) as total_income
+    FROM finances 
+    WHERE user_id = :user_id
+');
 $stmtFinance->execute(['user_id' => $_SESSION['user_id']]);
-$totalExpense = (float) ($stmtFinance->fetchColumn() ?? 0);
+$financeStats = $stmtFinance->fetch();
+$totalExpense = (float) ($financeStats['total_expense'] ?? 0);
+$totalIncome = (float) ($financeStats['total_income'] ?? 0);
+
+// 3b. Hitung Total Pengeluaran & Pemasukan Bulan Ini
+$stmtFinanceMonth = $pdo->prepare('
+    SELECT 
+        SUM(CASE WHEN type = "expense" THEN amount ELSE 0 END) as total_expense,
+        SUM(CASE WHEN type = "income" THEN amount ELSE 0 END) as total_income
+    FROM finances 
+    WHERE user_id = :user_id
+        AND MONTH(trans_date) = MONTH(CURRENT_DATE())
+        AND YEAR(trans_date) = YEAR(CURRENT_DATE())
+');
+$stmtFinanceMonth->execute(['user_id' => $_SESSION['user_id']]);
+$financeMonthStats = $stmtFinanceMonth->fetch();
+$monthlyExpense = (float) ($financeMonthStats['total_expense'] ?? 0);
+$monthlyIncome = (float) ($financeMonthStats['total_income'] ?? 0);
+
+// 3c. Ambil 10 Transaksi Finance Terbaru
+$stmtRecentFinance = $pdo->prepare('
+    SELECT id, title, amount, type, trans_date, note 
+    FROM finances 
+    WHERE user_id = :user_id
+    ORDER BY trans_date DESC, id DESC
+    LIMIT 10
+');
+$stmtRecentFinance->execute(['user_id' => $_SESSION['user_id']]);
+$recentFinances = $stmtRecentFinance->fetchAll();
 
 // 4. Ambil 5 Aktivitas Terbaru
 $stmtRecent = $pdo->prepare('
@@ -126,7 +160,7 @@ if (!empty($userPhoto) && $userPhoto !== 'default.png' && file_exists(__DIR__ . 
                         <a href="modules/calendar/index.php" class="nav-item">
                             📅 Calendar
                         </a>
-                        <a href="#" class="nav-item">
+                        <a href="modules/finance/index.php" class="nav-item">
                             💰 Finance
                         </a>
                     </nav>
@@ -223,6 +257,73 @@ if (!empty($userPhoto) && $userPhoto !== 'default.png' && file_exists(__DIR__ . 
                                     </div>
                                 </div>
                             <?php endforeach; ?>
+                        </div>
+                    <?php endif; ?>
+                </div>
+
+                <!-- Finance Section -->
+                <div class="finance-section">
+                    <div class="finance-header">
+                        <div>
+                            <h2 class="section-title">💰 Keuangan Bulan Ini</h2>
+                            <p class="section-subtitle">Ringkas transaksi finansial Anda</p>
+                        </div>
+                        <a href="modules/finance/index.php" class="btn btn-outline-primary">Lihat Detail &rarr;</a>
+                    </div>
+
+                    <!-- Finance Stats Grid -->
+                    <div class="finance-stats-grid">
+                        <div class="finance-stat">
+                            <div class="finance-stat-label">Pemasukan Bulan Ini</div>
+                            <div class="finance-stat-value income">Rp <?= number_format($monthlyIncome, 0, ',', '.') ?></div>
+                        </div>
+                        <div class="finance-stat">
+                            <div class="finance-stat-label">Pengeluaran Bulan Ini</div>
+                            <div class="finance-stat-value expense">Rp <?= number_format($monthlyExpense, 0, ',', '.') ?></div>
+                        </div>
+                        <div class="finance-stat">
+                            <div class="finance-stat-label">Saldo Bersih Bulan Ini</div>
+                            <div class="finance-stat-value <?= ($monthlyIncome - $monthlyExpense) >= 0 ? 'income' : 'expense' ?>">Rp <?= number_format($monthlyIncome - $monthlyExpense, 0, ',', '.') ?></div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Transactions -->
+                    <?php if (empty($recentFinances)): ?>
+                        <div class="empty-state">
+                            <p class="empty-text">Belum ada transaksi. <a href="#" onclick="openModal('modal-finance'); return false;" class="text-link">Catat transaksi pertama Anda</a></p>
+                        </div>
+                    <?php else: ?>
+                        <div class="finance-transactions">
+                            <h3 class="finance-subtitle">Transaksi Terbaru</h3>
+                            <table class="transactions-table">
+                                <thead>
+                                    <tr>
+                                        <th>Tanggal</th>
+                                        <th>Deskripsi</th>
+                                        <th class="text-right">Jumlah</th>
+                                        <th class="text-center">Tipe</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach (array_slice($recentFinances, 0, 5) as $trans): ?>
+                                        <tr>
+                                            <td class="date-cell"><?= htmlspecialchars(formatActivityTime($trans['trans_date']), ENT_QUOTES, 'UTF-8') ?></td>
+                                            <td class="desc-cell" title="<?= htmlspecialchars($trans['title'], ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($trans['title'], ENT_QUOTES, 'UTF-8') ?></td>
+                                            <td class="amount-cell text-right <?= $trans['type'] === 'income' ? 'income' : 'expense' ?>">
+                                                <?= $trans['type'] === 'income' ? '+' : '-' ?> Rp <?= number_format($trans['amount'], 0, ',', '.') ?>
+                                            </td>
+                                            <td class="type-cell text-center">
+                                                <span class="badge badge-<?= $trans['type'] === 'income' ? 'success' : 'danger' ?>">
+                                                    <?= $trans['type'] === 'income' ? 'Pemasukan' : 'Pengeluaran' ?>
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                            <div class="finance-footer">
+                                <a href="modules/finance/index.php" class="btn btn-outline-primary btn-sm">Lihat Semua Transaksi</a>
+                            </div>
                         </div>
                     <?php endif; ?>
                 </div>
@@ -478,11 +579,182 @@ if (!empty($userPhoto) && $userPhoto !== 'default.png' && file_exists(__DIR__ . 
         opacity: 0.6;
         cursor: not-allowed;
     }
+
+    /* ── Finance Section Styles ──────────────────────────────────────────── */
+    .finance-section {
+        background: var(--card-color);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-top: 2rem;
+    }
+    .finance-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+    .finance-header > div { flex: 1; }
+    .section-subtitle {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        margin-top: 0.25rem;
+    }
+    .finance-stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+    .finance-stat {
+        background: var(--background-color);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        padding: 1rem;
+        text-align: center;
+    }
+    .finance-stat-label {
+        font-size: 0.8rem;
+        font-weight: 500;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 0.5rem;
+    }
+    .finance-stat-value {
+        font-size: 1.25rem;
+        font-weight: 600;
+        font-family: 'Courier New', monospace;
+    }
+    .finance-stat-value.income { color: var(--success-color); }
+    .finance-stat-value.expense { color: var(--danger-color); }
+    
+    .finance-transactions {
+        margin-top: 1.5rem;
+        border-top: 1px solid var(--border-color);
+        padding-top: 1.5rem;
+    }
+    .finance-subtitle {
+        font-size: 0.95rem;
+        font-weight: 500;
+        margin-bottom: 1rem;
+        color: var(--text-color);
+    }
+    .transactions-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.9rem;
+    }
+    .transactions-table thead {
+        background: var(--background-color);
+        border-bottom: 2px solid var(--border-color);
+    }
+    .transactions-table th {
+        padding: 0.75rem;
+        text-align: left;
+        font-weight: 500;
+        color: var(--text-muted);
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .transactions-table td {
+        padding: 0.75rem;
+        border-bottom: 1px solid var(--border-color);
+        color: var(--text-color);
+    }
+    .transactions-table tbody tr:hover {
+        background: var(--background-color);
+    }
+    .date-cell { width: 100px; color: var(--text-muted); }
+    .desc-cell { max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .amount-cell { font-weight: 600; font-family: 'Courier New', monospace; }
+    .amount-cell.income { color: var(--success-color); }
+    .amount-cell.expense { color: var(--danger-color); }
+    .type-cell { width: 120px; }
+    .text-right { text-align: right; }
+    .text-center { text-align: center; }
+    .text-link {
+        color: var(--primary-color);
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.2s ease;
+    }
+    .text-link:hover { color: var(--primary-dark, #2563eb); }
+    .finance-footer {
+        display: flex;
+        justify-content: center;
+        margin-top: 1.5rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--border-color);
+    }
+    .btn-outline-primary {
+        background: transparent;
+        border: 1px solid var(--primary-color);
+        color: var(--primary-color);
+        padding: 0.6rem 1.2rem;
+        text-decoration: none;
+        border-radius: 8px;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        cursor: pointer;
+    }
+    .btn-outline-primary:hover {
+        background: rgba(59, 130, 246, 0.1);
+    }
+    .btn-outline-primary.btn-sm {
+        padding: 0.5rem 1rem;
+        font-size: 0.85rem;
+    }
+    .badge {
+        display: inline-block;
+        padding: 0.35rem 0.6rem;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .badge-success {
+        background: rgba(34, 197, 94, 0.15);
+        color: var(--success-color);
+    }
+    .badge-danger {
+        background: rgba(239, 68, 68, 0.15);
+        color: var(--danger-color);
+    }
+
     @media (max-width: 480px) {
         .qa-modal { padding: 1.25rem; }
         .qa-form-row { grid-template-columns: 1fr; }
         .qa-form-actions { flex-direction: column-reverse; }
         .qa-form-actions .btn { width: 100%; text-align: center; }
+        
+        .finance-header {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        .finance-header .btn-outline-primary {
+            width: 100%;
+            justify-content: center;
+        }
+        .finance-stats-grid {
+            grid-template-columns: 1fr;
+        }
+        .transactions-table {
+            font-size: 0.8rem;
+        }
+        .transactions-table th,
+        .transactions-table td {
+            padding: 0.5rem 0.25rem;
+        }
+        .date-cell { width: 70px; }
+        .desc-cell { max-width: 100px; }
+        .type-cell { width: 80px; }
     }
     </style>
 

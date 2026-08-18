@@ -62,6 +62,31 @@ function getDatabaseConnection(): PDO {
                 FOREIGN KEY(category_id) REFERENCES task_categories(id) ON DELETE SET NULL
             ) ENGINE=InnoDB"
         );
+
+        $pdo->exec(
+            "CREATE TABLE IF NOT EXISTS finance_categories (
+                id      INT AUTO_INCREMENT PRIMARY KEY,
+                user_id INT,
+                name    VARCHAR(100),
+                type    ENUM('income','expense'),
+                FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
+            ) ENGINE=InnoDB"
+        );
+
+        $pdo->exec(
+            "CREATE TABLE IF NOT EXISTS finances (
+                id          INT AUTO_INCREMENT PRIMARY KEY,
+                user_id     INT,
+                category_id INT,
+                title       VARCHAR(200),
+                amount      DECIMAL(15,2),
+                type        ENUM('income','expense'),
+                trans_date  DATE,
+                note        TEXT,
+                FOREIGN KEY(user_id)     REFERENCES users(id)              ON DELETE CASCADE,
+                FOREIGN KEY(category_id) REFERENCES finance_categories(id) ON DELETE SET NULL
+            ) ENGINE=InnoDB"
+        );
     }
 
     return $pdo;
