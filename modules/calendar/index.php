@@ -249,7 +249,7 @@ function formatDisplayDate($value): string {
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../../assets/css/style.css">
     <style>
-        body { background: #0f172a; color: #f8fafc; }
+        body { background: var(--background-color); color: var(--text-color); }
         .calendar-shell { max-width: 1180px; margin: 2rem auto; padding: 0 1rem 3rem; }
         .calendar-topbar { display: flex; justify-content: space-between; align-items: center; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
         .calendar-title { font-size: clamp(1.6rem, 2vw, 2.3rem); }
@@ -290,6 +290,25 @@ function formatDisplayDate($value): string {
             .two-col { grid-template-columns: 1fr; }
             .calendar-day { min-height: 110px; }
         }
+        [data-theme="light"] body { background: var(--background-color); color: var(--text-color); }
+        [data-theme="light"] .calendar-btn,
+        [data-theme="light"] .calendar-panel,
+        [data-theme="light"] .calendar-side,
+        [data-theme="light"] .calendar-day,
+        [data-theme="light"] .notify-item,
+        [data-theme="light"] .event-item,
+        [data-theme="light"] .field input,
+        [data-theme="light"] .field textarea { background: var(--card-color); color: var(--text-color); border-color: var(--border-color); }
+        [data-theme="light"] .calendar-weekday,
+        [data-theme="light"] .notify-item small,
+        [data-theme="light"] .event-item small,
+        [data-theme="light"] .empty-state { color: var(--text-muted); }
+        [data-theme="light"] .field label { color: var(--text-color); }
+        [data-theme="light"] .mini-item { color: #1D4ED8; }
+        [data-theme="light"] .mini-item.task { color: #92400E; }
+        [data-theme="light"] .mini-item.deadline { color: #B91C1C; }
+        [data-theme="light"] .alert-box { color: #B91C1C; }
+        [data-theme="light"] .alert-box.success { color: #166534; }
     </style>
 </head>
 <body>
@@ -465,5 +484,6 @@ function formatDisplayDate($value): string {
             </aside>
         </div>
     </main>
+    <script src="../../assets/js/app.js"></script>
 </body>
 </html>

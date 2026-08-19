@@ -882,5 +882,6 @@ if (!empty($userPhoto) && $userPhoto !== 'default.png' && file_exists(__DIR__ . 
         qaPost('create_finance', this, 'modal-finance-alert', 'btn-submit-finance');
     });
     </script>
+    <script src="assets/js/app.js"></script>
 </body>
 </html>

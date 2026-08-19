@@ -46,6 +46,24 @@
     --line-height-tight: 1.4;
     --line-height-normal: 1.6;
     --line-height-relaxed: 1.8;
+
+    /* Theme-aware surfaces */
+    --input-color: #0F172A;
+    --hover-color: #273449;
+    --overlay-color: rgba(15, 23, 42, 0.72);
+}
+
+[data-theme="light"] {
+    --primary-color: #2563EB;
+    --secondary-color: #1D4ED8;
+    --background-color: #F1F5F9;
+    --card-color: #FFFFFF;
+    --text-color: #1E293B;
+    --text-muted: #64748B;
+    --border-color: #CBD5E1;
+    --input-color: #FFFFFF;
+    --hover-color: #E2E8F0;
+    --overlay-color: rgba(15, 23, 42, 0.45);
 }
 
 /* ============================================
@@ -68,6 +86,29 @@ body {
     color: var(--text-color);
     background-color: var(--background-color);
     line-height: var(--line-height-normal);
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.35rem;
+    height: 2.35rem;
+    padding: 0;
+    border: 1px solid var(--border-color) !important;
+    border-radius: 50%;
+    background: var(--background-color) !important;
+    color: var(--text-color) !important;
+    font: inherit;
+    font-size: 1.25rem;
+    line-height: 1;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.theme-toggle:hover {
+    background: var(--hover-color) !important;
 }
 
 /* Typography */

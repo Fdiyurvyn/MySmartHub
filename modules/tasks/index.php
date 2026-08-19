@@ -79,17 +79,17 @@ $csrfToken = generateCsrfToken('tasks');
     <link rel="stylesheet" href="../../assets/css/style.css">
     
     <style>
-        body { background: #1E293B; color: #1E293B; }
-        .task-shell { max-width: 1200px; color: #1E293B; margin: 2rem auto; padding: 0 1rem 3rem; }
-        .task-card { background: rgba(39, 50, 68, 0.85); border: 1px solid #E2E8F0; border-radius: 16px; padding: 1.5rem; box-shadow: 0 10px 30px rgba(15,23,42,0.05); }
+        body { background: var(--background-color); color: var(--text-color); }
+        .task-shell { max-width: 1200px; color: var(--text-color); margin: 2rem auto; padding: 0 1rem 3rem; }
+        .task-card { background: var(--card-color); border: 1px solid var(--border-color); border-radius: 16px; padding: 1.5rem; box-shadow: 0 10px 30px rgba(15,23,42,0.05); }
         .task-grid { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 1.5rem; }
         .form-group { margin-bottom: 1rem; }
         .form-group label { display: block; margin-bottom: 0.35rem; font-weight: 600; }
-        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 0.8rem 0.9rem; border-radius: 10px; border: 1px solid #CBD5E1; font: inherit; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 0.8rem 0.9rem; border-radius: 10px; border: 1px solid var(--border-color); background: var(--input-color); color: var(--text-color); font: inherit; }
         .task-list { display: grid; gap: 1rem; }
-        .task-item { border: 1px solid #E2E8F0; border-radius: 14px; padding: 1rem; background: #F8FAFC; }
+        .task-item { border: 1px solid var(--border-color); border-radius: 14px; padding: 1rem; background: var(--background-color); }
         .task-top { display: flex; justify-content: space-between; gap: 1rem; align-items: flex-start; }
-        .task-meta { color: #64748B; font-size: 0.9rem; margin-top: 0.5rem; }
+        .task-meta { color: var(--text-muted); font-size: 0.9rem; margin-top: 0.5rem; }
         .badge { display: inline-block; padding: 0.3rem 0.6rem; border-radius: 999px; font-size: 0.8rem; font-weight: 600; margin-right: 0.4rem; }
         .badge-high { background: #FEE2E2; color: #B91C1C; }
         .badge-medium { background: #FEF3C7; color: #B45309; }
@@ -100,8 +100,8 @@ $csrfToken = generateCsrfToken('tasks');
         .actions { display: flex; gap: 0.5rem; margin-top: 0.8rem; }
         .btn-sm { padding: 0.5rem 0.75rem; font-size: 0.9rem; }
         .alert { padding: 0.9rem 1rem; border-radius: 10px; margin-bottom: 1rem; }
-        .alert-success { background: #DCFCE7; color: #166534; }
-        .alert-error { background: #FEE2E2; color: #991B1B; }
+        .alert-success { background: rgba(34, 197, 94, 0.15); color: var(--success-color); }
+        .alert-error { background: rgba(239, 68, 68, 0.15); color: var(--danger-color); }
         @media (max-width: 900px) { .task-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
@@ -115,8 +115,8 @@ $csrfToken = generateCsrfToken('tasks');
 
     <main class="task-shell">
         <div class="task-card">
-            <h1 style="margin-bottom: 1rem; color: white;">Todo List</h1>
-            <p style="margin-bottom: 1.5rem; color: #e2e2e2;">Kelola tugas harian Anda dengan aman dan terorganisir.</p>
+            <h1 style="margin-bottom: 1rem; color: var(--text-color);">Todo List</h1>
+            <p style="margin-bottom: 1.5rem; color: var(--text-muted);">Kelola tugas harian Anda dengan aman dan terorganisir.</p>
 
             <?php if ($success !== ''): ?>
                 <div class="alert alert-success"><?= htmlspecialchars($success, ENT_QUOTES, 'UTF-8') ?></div>
@@ -132,7 +132,7 @@ $csrfToken = generateCsrfToken('tasks');
 
             <div class="task-grid">
                 <section>
-                    <h2 style="margin-bottom: 1rem; color: white;">Daftar Tugas</h2>
+                    <h2 style="margin-bottom: 1rem; color: var(--text-color);">Daftar Tugas</h2>
                     <div class="task-list">
                         <?php if (empty($tasks)): ?>
                             <div class="task-item">Belum ada tugas. Tambahkan tugas pertama Anda.</div>
@@ -154,7 +154,7 @@ $csrfToken = generateCsrfToken('tasks');
                                                 <?php endif; ?>
                                             </div>
                                         </div>
-                                        <div style="text-align:right; color:#64748B; font-size:0.9rem;">
+                                        <div style="text-align:right; color:var(--text-muted); font-size:0.9rem;">
                                             <?php if (!empty($taskItem['deadline'])): ?><div>Deadline: <?= htmlspecialchars($taskItem['deadline'], ENT_QUOTES, 'UTF-8') ?></div><?php endif; ?>
                                             <div>Updated: <?= htmlspecialchars($taskItem['updated_at'], ENT_QUOTES, 'UTF-8') ?></div>
                                         </div>
@@ -175,7 +175,7 @@ $csrfToken = generateCsrfToken('tasks');
                 </section>
 
                 <aside>
-                    <h2 style="margin-bottom: 1rem; color: white;"><?= $mode === 'edit' ? 'Edit Tugas' : 'Tambah Tugas' ?></h2>
+                    <h2 style="margin-bottom: 1rem; color: var(--text-color);"><?= $mode === 'edit' ? 'Edit Tugas' : 'Tambah Tugas' ?></h2>
                     <form method="post">
                         <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8') ?>">
                         <input type="hidden" name="action" value="<?= $mode === 'edit' ? 'edit' : 'create' ?>">
@@ -237,5 +237,6 @@ $csrfToken = generateCsrfToken('tasks');
             </div>
         </div>
     </main>
+    <script src="../../assets/js/app.js"></script>
 </body>
 </html>

@@ -219,5 +219,6 @@ $csrfToken = generateCsrfToken('finance');
         // Initialize view based on saved transaction type
         setTransactionType(<?= json_encode($transaction['type']) ?>);
     </script>
+    <script src="../../assets/js/app.js"></script>
 </body>
 </html>

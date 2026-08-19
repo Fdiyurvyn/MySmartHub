@@ -242,5 +242,6 @@ unset($_SESSION['finance_success'], $_SESSION['finance_error']);
         // Initialize category options based on default 'expense' type
         setTransactionType('expense');
     </script>
+    <script src="../../assets/js/app.js"></script>
 </body>
 </html>

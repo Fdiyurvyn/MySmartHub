@@ -162,5 +162,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <p class="footer-copyright">&copy; 2024 MySmartHub. Semua hak dilindungi.</p>
         </div>
     </footer>
+    <script src="assets/js/app.js"></script>
 </body>
 </html>

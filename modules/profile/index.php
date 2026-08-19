@@ -277,5 +277,6 @@ if (!empty($userPhoto) && $userPhoto !== 'default.png' && file_exists(__DIR__ . 
             }
         }
     </script>
+    <script src="../../assets/js/app.js"></script>
 </body>
 </html>
