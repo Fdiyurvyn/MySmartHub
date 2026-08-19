@@ -81,7 +81,7 @@ $csrfToken = generateCsrfToken('tasks');
     <style>
         body { background: #1E293B; color: #1E293B; }
         .task-shell { max-width: 1200px; color: #1E293B; margin: 2rem auto; padding: 0 1rem 3rem; }
-        .task-card { background: #4c9ef0; border: 1px solid #E2E8F0; border-radius: 16px; padding: 1.5rem; box-shadow: 0 10px 30px rgba(15,23,42,0.05); }
+        .task-card { background: rgba(39, 50, 68, 0.85); border: 1px solid #E2E8F0; border-radius: 16px; padding: 1.5rem; box-shadow: 0 10px 30px rgba(15,23,42,0.05); }
         .task-grid { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 1.5rem; }
         .form-group { margin-bottom: 1rem; }
         .form-group label { display: block; margin-bottom: 0.35rem; font-weight: 600; }
@@ -115,7 +115,7 @@ $csrfToken = generateCsrfToken('tasks');
 
     <main class="task-shell">
         <div class="task-card">
-            <h1 style="margin-bottom: 1rem;">Todo List</h1>
+            <h1 style="margin-bottom: 1rem; color: white;">Todo List</h1>
             <p style="margin-bottom: 1.5rem; color: #e2e2e2;">Kelola tugas harian Anda dengan aman dan terorganisir.</p>
 
             <?php if ($success !== ''): ?>
@@ -132,7 +132,7 @@ $csrfToken = generateCsrfToken('tasks');
 
             <div class="task-grid">
                 <section>
-                    <h2 style="margin-bottom: 1rem;">Daftar Tugas</h2>
+                    <h2 style="margin-bottom: 1rem; color: white;">Daftar Tugas</h2>
                     <div class="task-list">
                         <?php if (empty($tasks)): ?>
                             <div class="task-item">Belum ada tugas. Tambahkan tugas pertama Anda.</div>
@@ -175,7 +175,7 @@ $csrfToken = generateCsrfToken('tasks');
                 </section>
 
                 <aside>
-                    <h2 style="margin-bottom: 1rem;"><?= $mode === 'edit' ? 'Edit Tugas' : 'Tambah Tugas' ?></h2>
+                    <h2 style="margin-bottom: 1rem; color: white;"><?= $mode === 'edit' ? 'Edit Tugas' : 'Tambah Tugas' ?></h2>
                     <form method="post">
                         <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8') ?>">
                         <input type="hidden" name="action" value="<?= $mode === 'edit' ? 'edit' : 'create' ?>">
