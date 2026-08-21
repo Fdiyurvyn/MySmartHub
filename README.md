@@ -31,7 +31,12 @@ DB_HOST=127.0.0.1
 DB_NAME=mysmarthub
 DB_USER=root
 DB_PASS=
+GEMINI_API_KEY=isi_api_key_gemini_di_server
+GEMINI_MODEL=gemini-2.0-flash
 ```
+
+### AI Assistant
+Gunakan menu **AI Assistant** dari dashboard untuk bertanya tentang tugas, jadwal, dan keuangan milik akun yang sedang login. Tanpa `GEMINI_API_KEY`, fitur tetap berjalan menggunakan respons lokal terbatas. Untuk mengaktifkan Gemini, atur `GEMINI_API_KEY` sebagai environment variable server dan jangan menyimpannya di JavaScript atau repository.
 
 5. Buka aplikasi di browser:
 ```

@@ -141,18 +141,26 @@ Update status: `[ ]` belum · `[/]` sedang dikerjakan · `[x]` selesai
 
 ---
 
-## 🤖 AI Assistant (Fase 7 — ⬜ Planned)
+## 🤖 AI Assistant (Fase 7 — ✅ COMPLETE)
 
 ### Backend
-- [ ] `api/ai.php` — proxy ke Gemini API (POST request)
-- [ ] Simpan history ke `ai_history`
-- [ ] Rate limiting (max request per menit)
+- [x] `api/ai.php` — proxy ke Gemini API (POST request) + local fallback
+- [x] Simpan history ke `ai_history` dengan schema (user_id, role, message, created_at)
+- [x] Context gathering (active tasks, upcoming events, finance summary)
+- [ ] Rate limiting (max request per menit) — future enhancement
 
 ### Frontend
-- [ ] `modules/ai/index.php` — chat UI (bubble style)
-- [ ] Input field + send button
-- [ ] Render response dengan markdown formatting
-- [ ] Riwayat chat dari `ai_history`
+- [x] `modules/ai/index.php` — chat UI (bubble style)
+- [x] Input field + send button dengan loading state
+- [x] Render response dengan role-based styling (user/assistant bubbles)
+- [x] Riwayat chat dari `ai_history` (last 30 messages)
+- [ ] Markdown formatting untuk response — future enhancement
+
+### Documentation
+- [x] `AI_ASSISTANT.md` — Setup guide + usage examples
+- [x] Environment variables documented (GEMINI_API_KEY, GEMINI_MODEL)
+- [x] Database schema documented
+- [x] Troubleshooting guide
 
 ---
 

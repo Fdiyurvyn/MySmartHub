@@ -163,6 +163,9 @@ if (!empty($userPhoto) && $userPhoto !== 'default.png' && file_exists(__DIR__ . 
                         <a href="modules/finance/index.php" class="nav-item">
                             💰 Finance
                         </a>
+                        <a href="modules/ai/index.php" class="nav-item">
+                            ✨ AI Assistant
+                        </a>
                     </nav>
                 </div>
             </aside>
