@@ -88,7 +88,6 @@ function getDatabaseConnection(): PDO {
             ) ENGINE=InnoDB"
         );
 
-        $pdo->exec("DROP TABLE IF EXISTS ai_history");
         $pdo->exec(
             "CREATE TABLE IF NOT EXISTS ai_history (
                 id      INT AUTO_INCREMENT PRIMARY KEY,

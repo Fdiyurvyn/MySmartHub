@@ -63,13 +63,27 @@ function localAiReply(string $message, array $context): string {
         }
         return 'Ringkasan bulan ini: pemasukan **Rp ' . number_format($income, 0, ',', '.') . '**, pengeluaran **Rp ' . number_format($expense, 0, ',', '.') . '**, saldo **Rp ' . number_format($income - $expense, 0, ',', '.') . '**.';
     }
-    return 'Saya siap membantu tugas, jadwal, dan keuangan Anda. Coba tanyakan "Apa tugas saya?" atau "Berapa pengeluaran saya bulan ini?"';
+    return "Saya memahami pesan Anda: \"{$message}\". Saya bisa membantu mengatur tugas, membaca jadwal, dan merangkum keuangan. Ceritakan tujuan Anda atau tanyakan sesuatu yang lebih spesifik.";
 }
 
-function callGemini(string $message, array $context, string $apiKey, string $model): ?string {
+function getConversationHistory(PDO $pdo, int $userId): array {
+    $history = $pdo->prepare('SELECT role, message FROM ai_history WHERE user_id = :user_id ORDER BY id DESC LIMIT 12');
+    $history->execute(['user_id' => $userId]);
+    return array_reverse($history->fetchAll());
+}
+
+function callGemini(string $message, array $context, array $history, string $apiKey, string $model): ?string {
     $url = 'https://generativelanguage.googleapis.com/v1beta/models/' . rawurlencode($model) . ':generateContent?key=' . rawurlencode($apiKey);
-    $prompt = "Anda adalah SmartHub Assistant. Jawab dalam Bahasa Indonesia secara ringkas dan praktis. Jangan mengarang data. Konteks user berikut adalah data privat dan hanya untuk menjawab pesan ini:\n" . json_encode($context, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . "\n\nPesan user: " . $message;
-    $payload = json_encode(['contents' => [['parts' => [['text' => $prompt]]]]]);
+    $contents = [];
+    foreach ($history as $item) {
+        $contents[] = [
+            'role' => $item['role'] === 'assistant' ? 'model' : 'user',
+            'parts' => [['text' => $item['message']]],
+        ];
+    }
+    $contents[] = ['role' => 'user', 'parts' => [['text' => $message]]];
+    $system = "Anda adalah SmartHub Assistant, asisten pribadi yang hangat, cerdas, dan praktis. Jawab dalam Bahasa Indonesia kecuali user meminta bahasa lain. Pahami konteks percakapan sebelumnya, jawab langsung, dan gunakan Markdown sederhana bila membantu. Jangan mengarang data; gunakan konteks MySmartHub berikut hanya jika relevan:\n" . json_encode($context, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+    $payload = json_encode(['system_instruction' => ['parts' => [['text' => $system]]], 'contents' => $contents]);
     $ch = curl_init($url);
     curl_setopt_array($ch, [CURLOPT_POST => true, CURLOPT_POSTFIELDS => $payload, CURLOPT_HTTPHEADER => ['Content-Type: application/json'], CURLOPT_RETURNTRANSFER => true, CURLOPT_TIMEOUT => 20]);
     $response = curl_exec($ch);
@@ -82,9 +96,10 @@ function callGemini(string $message, array $context, string $apiKey, string $mod
 
 try {
     $context = aiContext($pdo, $userId);
+    $history = getConversationHistory($pdo, $userId);
     $apiKey = trim((string) ($_ENV['GEMINI_API_KEY'] ?? getenv('GEMINI_API_KEY') ?: ''));
     $model = trim((string) ($_ENV['GEMINI_MODEL'] ?? getenv('GEMINI_MODEL') ?: 'gemini-2.0-flash'));
-    $reply = $apiKey !== '' ? callGemini($message, $context, $apiKey, $model) : null;
+    $reply = $apiKey !== '' ? callGemini($message, $context, $history, $apiKey, $model) : null;
     $reply = $reply ?: localAiReply($message, $context);
 
     $save = $pdo->prepare('INSERT INTO ai_history (user_id, role, message) VALUES (:user_id, :role, :message)');

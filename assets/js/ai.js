@@ -6,15 +6,37 @@
     const submit = document.getElementById('ai-submit');
     if (!form || !input || !messages || !window.smartHubAi) return;
 
+    const formatReply = (text) => text
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+        .replace(/^### (.+)$/gm, '<strong>$1</strong>')
+        .replace(/^## (.+)$/gm, '<strong>$1</strong>')
+        .replace(/^# (.+)$/gm, '<strong>$1</strong>');
+
     const addMessage = (text, role) => {
         const empty = messages.querySelector('.ai-empty');
         if (empty) empty.remove();
         const bubble = document.createElement('div');
         bubble.className = `ai-message ${role}`;
-        bubble.textContent = text;
+        if (role === 'assistant') bubble.innerHTML = formatReply(text);
+        else bubble.textContent = text;
         messages.appendChild(bubble);
         messages.scrollTop = messages.scrollHeight;
     };
+
+    document.querySelectorAll('[data-prompt]').forEach((button) => {
+        button.addEventListener('click', () => {
+            input.value = button.dataset.prompt || '';
+            input.focus();
+        });
+    });
+
+    input.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' && !event.shiftKey) {
+            event.preventDefault();
+            form.requestSubmit();
+        }
+    });
 
     form.addEventListener('submit', async (event) => {
         event.preventDefault();
