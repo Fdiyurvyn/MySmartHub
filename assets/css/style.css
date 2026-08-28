@@ -250,12 +250,29 @@ a:hover {
 .hero {
     background-color: var(--background-color);
     padding: var(--spacing-2xl) var(--spacing-lg);
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-glow {
+    position: absolute;
+    top: -20%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, rgba(139, 92, 246, 0.05) 50%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+    filter: blur(40px);
 }
 
 .hero-container {
     max-width: 800px;
     margin: 0 auto;
     text-align: center;
+    position: relative;
+    z-index: 1;
 }
 
 .badge {
@@ -268,6 +285,9 @@ a:hover {
     font-size: 0.875rem;
     font-weight: 500;
     margin-bottom: var(--spacing-lg);
+    opacity: 0;
+    animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation-delay: 0.1s;
 }
 
 .hero-title {
@@ -276,6 +296,9 @@ a:hover {
     color: var(--text-color);
     margin-bottom: var(--spacing-lg);
     line-height: var(--line-height-relaxed);
+    opacity: 0;
+    animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation-delay: 0.25s;
 }
 
 .hero-description {
@@ -283,6 +306,9 @@ a:hover {
     color: var(--text-muted);
     margin-bottom: var(--spacing-2xl);
     line-height: var(--line-height-relaxed);
+    opacity: 0;
+    animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation-delay: 0.4s;
 }
 
 .hero-buttons {
@@ -290,6 +316,9 @@ a:hover {
     gap: var(--spacing-md);
     justify-content: center;
     flex-wrap: wrap;
+    opacity: 0;
+    animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation-delay: 0.55s;
 }
 
 /* ============================================
@@ -316,26 +345,34 @@ a:hover {
 .features-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 0;
+    gap: var(--spacing-md);
 }
 
 .feature-card {
     padding: var(--spacing-2xl);
     border: var(--border-width) solid var(--border-color);
     background-color: var(--card-color);
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    border-radius: 12px;
+    transition: border-color 0.3s cubic-bezier(0.16, 1, 0.3, 1), 
+                transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), 
+                box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Border tipis sebagai pemisah antar kartu, bukan card terpisah */
 .feature-card:hover {
     border-color: var(--primary-color);
-    box-shadow: var(--shadow-sm);
+    transform: translateY(-8px);
+    box-shadow: 0 10px 30px rgba(99, 102, 241, 0.12);
 }
 
 .feature-icon {
     font-size: 2.5rem;
     margin-bottom: var(--spacing-md);
-    display: block;
+    display: inline-block;
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.feature-card:hover .feature-icon {
+    transform: scale(1.15) rotate(5deg);
 }
 
 .feature-title {
@@ -350,6 +387,46 @@ a:hover {
     color: var(--text-muted);
     line-height: var(--line-height-relaxed);
 }
+
+/* ============================================
+   ANIMATION & REVEAL CLASSES
+   ============================================ */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.reveal {
+    opacity: 0;
+    transform: translateY(25px);
+    transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.reveal.active {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.reveal-stagger {
+    opacity: 0;
+    transform: translateY(25px);
+    transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.reveal-stagger.active {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.reveal-stagger.active:nth-child(1) { transition-delay: 0.1s; }
+.reveal-stagger.active:nth-child(2) { transition-delay: 0.25s; }
+.reveal-stagger.active:nth-child(3) { transition-delay: 0.4s; }
 
 
 

@@ -43,6 +43,7 @@
     <main class="main-content">
         <!-- HERO SECTION -->
         <section class="hero">
+            <div class="hero-glow"></div>
             <div class="hero-container">
                 <!-- Badge -->
                 <div class="badge">
@@ -68,11 +69,11 @@
         <!-- FEATURES SECTION -->
         <section id="features" class="features">
             <div class="features-container">
-                <h2 class="section-title">Fitur Utama</h2>
+                <h2 class="section-title reveal">Fitur Utama</h2>
                 
                 <div class="features-grid">
                     <!-- Feature 1: Todo -->
-                    <article class="feature-card">
+                    <article class="feature-card reveal-stagger">
                         <div class="feature-icon">📝</div>
                         <h3 class="feature-title">Todo List</h3>
                         <p class="feature-description">
@@ -81,7 +82,7 @@
                     </article>
                     
                     <!-- Feature 2: Calendar -->
-                    <article class="feature-card">
+                    <article class="feature-card reveal-stagger">
                         <div class="feature-icon">📅</div>
                         <h3 class="feature-title">Calendar</h3>
                         <p class="feature-description">
@@ -90,7 +91,7 @@
                     </article>
                     
                     <!-- Feature 3: Finance -->
-                    <article class="feature-card">
+                    <article class="feature-card reveal-stagger">
                         <div class="feature-icon">💰</div>
                         <h3 class="feature-title">Finance Tracker</h3>
                         <p class="feature-description">
@@ -103,8 +104,8 @@
 
         <!-- ABOUT SECTION -->
         <section id="about" class="about">
-            <div class="about-container">
-                <h2 class="section-title" >Tentang MySmartHub</h2>
+            <div class="about-container reveal">
+                <h2 class="section-title">Tentang MySmartHub</h2>
                 <p class="about-description">
                     MySmartHub adalah platform all-in-one yang dirancang untuk membantu Anda mengelola berbagai aspek kehidupan digital Anda. Dengan fitur-fitur seperti todo list, calendar, dan finance tracker, Anda dapat meningkatkan produktivitas dan efisiensi dalam satu tempat.
                 </p>
@@ -113,7 +114,7 @@
 
         <!-- CTA SECTION (Optional) -->
         <section class="cta-section">
-            <div class="cta-container">
+            <div class="cta-container reveal">
                 <h2>Siap meningkatkan produktivitas Anda?</h2>
                 <p>Bergabunglah dengan ribuan pengguna yang sudah merasakan manfaatnya.</p>
                 <a href="register.php" class="btn btn-primary btn-large">Daftar Gratis Sekarang</a>

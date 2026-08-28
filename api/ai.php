@@ -50,20 +50,81 @@ function aiContext(PDO $pdo, int $userId): array {
 
 function localAiReply(string $message, array $context): string {
     $lower = function_exists('mb_strtolower') ? mb_strtolower($message, 'UTF-8') : strtolower($message);
-    if (str_contains($lower, 'tugas') || str_contains($lower, 'todo')) {
+    
+    // 1. Tugas / Todo
+    if (str_contains($lower, 'tugas') || str_contains($lower, 'todo') || str_contains($lower, 'pekerjaan') || str_contains($lower, 'aktivitas') || str_contains($lower, 'rencana')) {
         $count = count($context['active_tasks']);
-        return $count > 0 ? "Anda memiliki {$count} tugas aktif. Tugas terdekat: **{$context['active_tasks'][0]['title']}**." : 'Belum ada tugas aktif. Anda bisa menambahkan todo dari halaman Todo List.';
+        if ($count === 0) {
+            return "Tidak ada tugas aktif saat ini. Bagus sekali! Anda bisa menambahkan tugas baru di menu **Todo List**.";
+        }
+        $reply = "Anda memiliki **{$count} tugas aktif**:\n";
+        foreach ($context['active_tasks'] as $index => $task) {
+            $num = $index + 1;
+            $priority = ucfirst($task['priority']);
+            $deadline = !empty($task['deadline']) ? date('d M Y, H:i', strtotime($task['deadline'])) : 'Tanpa deadline';
+            $reply .= "{$num}. **{$task['title']}** (Prioritas: *{$priority}*, Batas: *{$deadline}*)\n";
+        }
+        return $reply;
     }
-    if (str_contains($lower, 'keuangan') || str_contains($lower, 'pengeluaran') || str_contains($lower, 'finance')) {
+    
+    // 2. Jadwal / Agenda / Event
+    if (str_contains($lower, 'jadwal') || str_contains($lower, 'agenda') || str_contains($lower, 'event') || str_contains($lower, 'kalender') || str_contains($lower, 'acara')) {
+        $count = count($context['upcoming_events']);
+        if ($count === 0) {
+            return "Tidak ada jadwal atau event mendatang dalam waktu dekat. Anda bisa membuat agenda baru di menu **Calendar**.";
+        }
+        $reply = "Berikut **{$count} jadwal/event mendatang** Anda:\n";
+        foreach ($context['upcoming_events'] as $index => $event) {
+            $num = $index + 1;
+            $date = date('d M Y, H:i', strtotime($event['start_date']));
+            $location = !empty($event['location']) ? " di *{$event['location']}*" : '';
+            $reply .= "{$num}. **{$event['title']}** pada *{$date}*{$location}\n";
+        }
+        return $reply;
+    }
+    
+    // 3. Keuangan / Finance
+    if (str_contains($lower, 'keuangan') || str_contains($lower, 'pengeluaran') || str_contains($lower, 'pemasukan') || str_contains($lower, 'finance') || str_contains($lower, 'saldo') || str_contains($lower, 'transaksi')) {
         $income = 0;
         $expense = 0;
         foreach ($context['finance_this_month'] as $row) {
             if ($row['type'] === 'income') $income = (float) $row['total'];
             if ($row['type'] === 'expense') $expense = (float) $row['total'];
         }
-        return 'Ringkasan bulan ini: pemasukan **Rp ' . number_format($income, 0, ',', '.') . '**, pengeluaran **Rp ' . number_format($expense, 0, ',', '.') . '**, saldo **Rp ' . number_format($income - $expense, 0, ',', '.') . '**.';
+        $balance = $income - $expense;
+        $reply = "Berikut ringkasan **keuangan Anda bulan ini**:\n";
+        $reply .= "- Total Pemasukan: **Rp " . number_format($income, 0, ',', '.') . "**\n";
+        $reply .= "- Total Pengeluaran: **Rp " . number_format($expense, 0, ',', '.') . "**\n";
+        $reply .= "- Saldo Bersih: **Rp " . number_format($balance, 0, ',', '.') . "**\n\n";
+        if ($balance < 0) {
+            $reply .= "⚠️ *Peringatan: Pengeluaran Anda melebihi pemasukan bulan ini. Tetap hemat ya!*";
+        } else {
+            $reply .= "✅ *Kondisi keuangan aman. Pertahankan kebiasaan menabung Anda!*";
+        }
+        return $reply;
     }
-    return "Saya memahami pesan Anda: \"{$message}\". Saya bisa membantu mengatur tugas, membaca jadwal, dan merangkum keuangan. Ceritakan tujuan Anda atau tanyakan sesuatu yang lebih spesifik.";
+
+    // 4. Greetings
+    if (preg_match('/\b(halo|hai|hi|pagi|siang|sore|malam|assalamualaikum|hello)\b/i', $lower)) {
+        return "Halo! Saya **SmartHub Assistant**.\nAda yang bisa saya bantu hari ini?\n\nAnda bisa bertanya tentang:\n- 📝 **Tugas** (contoh: *Tampilkan tugas saya*)\n- 📅 **Jadwal** (contoh: *Apa agenda saya berikutnya?*)\n- 💰 **Keuangan** (contoh: *Ringkasan keuangan bulan ini*)";
+    }
+
+    // 5. Identity
+    if (str_contains($lower, 'siapa kamu') || str_contains($lower, 'siapa anda') || str_contains($lower, 'nama kamu') || str_contains($lower, 'nama anda')) {
+        return "Saya adalah **SmartHub Assistant**, asisten AI personal Anda di **MySmartHub** yang dirancang untuk mempermudah produktivitas harian Anda. Saya dapat terhubung dengan modul Tugas, Kalender, dan Keuangan Anda untuk memberikan info terkini secara instan.";
+    }
+
+    // 6. Gratitude
+    if (str_contains($lower, 'terima kasih') || str_contains($lower, 'makasih') || str_contains($lower, 'thanks') || str_contains($lower, 'thank you')) {
+        return "Sama-sama! Senang bisa membantu Anda. Tetap produktif dan semangat ya! 💪";
+    }
+
+    // 7. Help
+    if (str_contains($lower, 'bantuan') || str_contains($lower, 'help') || str_contains($lower, 'tolong') || str_contains($lower, 'fitur')) {
+        return "Tentu! Saya bisa membantu Anda mengelola beberapa hal berikut:\n\n1. 📝 **Tugas & Todo**: Ketik 'tugas' atau 'pekerjaan' untuk melihat daftar todo aktif Anda.\n2. 📅 **Kalender & Event**: Ketik 'jadwal' atau 'event' untuk melihat agenda mendatang.\n3. 💰 **Keuangan**: Ketik 'keuangan' atau 'pengeluaran' untuk melihat ringkasan keuangan bulan ini.\n\nKetik salah satu kata kunci di atas untuk mulai!";
+    }
+    
+    return "Saya memahami pesan Anda. Saya bisa membantu mengatur tugas, membaca jadwal agenda, dan merangkum keuangan Anda. Ceritakan tujuan Anda atau tanyakan sesuatu yang lebih spesifik (contoh: *'Apa tugas saya hari ini?'*).";
 }
 
 function getConversationHistory(PDO $pdo, int $userId): array {
