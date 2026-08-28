@@ -1090,3 +1090,178 @@ a:hover {
         width: 100%;
     }
 }
+
+/* ============================================
+   LANDING PAGE ANIMATIONS
+   ============================================ */
+
+/* --- Canvas particle overlay --- */
+.hero-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* --- Floating orbs --- */
+.hero-orb {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+    filter: blur(60px);
+    opacity: 0.25;
+    z-index: 0;
+}
+
+.hero-orb-1 {
+    width: 380px;
+    height: 380px;
+    background: radial-gradient(circle, #6366F1, transparent 70%);
+    top: -80px;
+    left: -100px;
+    animation: orbDrift 12s ease-in-out infinite alternate;
+}
+
+.hero-orb-2 {
+    width: 280px;
+    height: 280px;
+    background: radial-gradient(circle, #8B5CF6, transparent 70%);
+    bottom: -60px;
+    right: -80px;
+    animation: orbDrift 16s ease-in-out infinite alternate-reverse;
+}
+
+.hero-orb-3 {
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(circle, #EC4899, transparent 70%);
+    top: 40%;
+    right: 10%;
+    animation: orbDrift 10s ease-in-out infinite alternate;
+    animation-delay: -4s;
+}
+
+@keyframes orbDrift {
+    0%   { transform: translate(0, 0) scale(1); }
+    33%  { transform: translate(40px, -30px) scale(1.08); }
+    66%  { transform: translate(-20px, 20px) scale(0.96); }
+    100% { transform: translate(30px, 40px) scale(1.05); }
+}
+
+/* --- Aurora glow (existing .hero-glow enhanced) --- */
+.hero-glow {
+    animation: auroraShift 8s ease-in-out infinite alternate;
+}
+
+@keyframes auroraShift {
+    0%   { transform: translateX(-50%) scale(1);    opacity: 1; }
+    50%  { transform: translateX(-46%) scale(1.15); opacity: 0.8; }
+    100% { transform: translateX(-54%) scale(0.9);  opacity: 1; }
+}
+
+/* --- Typewriter --- */
+.hero-title-static {
+    display: block;
+}
+
+.hero-typewriter {
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+.typewriter-cursor {
+    display: inline-block;
+    color: var(--primary-color);
+    font-weight: 300;
+    animation: cursorBlink 0.9s step-end infinite;
+    margin-left: 2px;
+}
+
+@keyframes cursorBlink {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0; }
+}
+
+/* --- Hero staggered entry --- */
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(22px); }
+    to   { opacity: 1; transform: translateY(0);    }
+}
+
+.badge {
+    opacity: 0;
+    animation: fadeInUp 0.75s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation-delay: 0.1s;
+}
+
+.hero-title {
+    opacity: 0;
+    animation: fadeInUp 0.75s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation-delay: 0.25s;
+}
+
+.hero-description {
+    opacity: 0;
+    animation: fadeInUp 0.75s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation-delay: 0.4s;
+}
+
+.hero-buttons {
+    opacity: 0;
+    animation: fadeInUp 0.75s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation-delay: 0.55s;
+}
+
+/* --- Scroll Reveal --- */
+.reveal {
+    opacity: 0;
+    transform: translateY(25px);
+    transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal.active {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.reveal-stagger {
+    opacity: 0;
+    transform: translateY(25px);
+    transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal-stagger.active { opacity: 1; transform: translateY(0); }
+.features-grid .reveal-stagger.active:nth-child(1) { transition-delay: 0.0s; }
+.features-grid .reveal-stagger.active:nth-child(2) { transition-delay: 0.18s; }
+.features-grid .reveal-stagger.active:nth-child(3) { transition-delay: 0.36s; }
+
+/* --- Feature card hover float --- */
+.feature-card {
+    border-radius: 12px;
+    transition: border-color 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+                transform     0.35s cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow    0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.feature-card:hover {
+    border-color: var(--primary-color);
+    transform: translateY(-8px);
+    box-shadow: 0 12px 36px rgba(99, 102, 241, 0.18);
+}
+.feature-icon {
+    display: inline-block;
+    transition: transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.feature-card:hover .feature-icon {
+    transform: scale(1.2) rotate(6deg);
+}
+
+/* --- CTA section pulse button --- */
+.cta-section .btn-primary {
+    animation: ctaPulse 3s ease-in-out infinite;
+}
+@keyframes ctaPulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4); }
+    50%       { box-shadow: 0 0 0 12px rgba(59, 130, 246, 0);  }
+}
